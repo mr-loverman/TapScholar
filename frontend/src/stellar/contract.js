@@ -5,6 +5,7 @@ import {
   BASE_FEE,
   rpc,
   nativeToScVal,
+  Address,
 } from "@stellar/stellar-sdk";
 
 import { signTransaction } from "@stellar/freighter-api";
@@ -18,18 +19,14 @@ const server = new rpc.Server(
 
 async function waitForTransaction(hash) {
   while (true) {
-    const result =
+    const response =
       await server.getTransaction(hash);
 
-    if (
-      result.status === "SUCCESS"
-    ) {
-      return result;
+    if (response.status === "SUCCESS") {
+      return response;
     }
 
-    if (
-      result.status === "FAILED"
-    ) {
+    if (response.status === "FAILED") {
       throw new Error(
         "Transaction Failed"
       );
@@ -46,72 +43,61 @@ async function invokeContract(
   method,
   args = []
 ) {
-  try {
-    const account =
-      await server.getAccount(
-        walletAddress
-      );
+  const account =
+    await server.getAccount(
+      walletAddress
+    );
 
-    const contract =
-      new Contract(CONTRACT_ID);
+  const contract =
+    new Contract(CONTRACT_ID);
 
-    let tx =
-      new TransactionBuilder(
-        account,
-        {
-          fee: BASE_FEE,
-          networkPassphrase:
-            Networks.TESTNET,
-        }
+  let tx =
+    new TransactionBuilder(account, {
+      fee: BASE_FEE,
+      networkPassphrase:
+        Networks.TESTNET,
+    })
+      .addOperation(
+        contract.call(method, ...args)
       )
-        .addOperation(
-          contract.call(
-            method,
-            ...args
-          )
-        )
-        .setTimeout(30)
-        .build();
+      .setTimeout(30)
+      .build();
 
-    tx =
-      await server.prepareTransaction(
-        tx
-      );
+  tx =
+    await server.prepareTransaction(
+      tx
+    );
 
-    const signed =
-      await signTransaction(
-        tx.toXDR(),
-        {
-          networkPassphrase:
-            Networks.TESTNET,
-        }
-      );
+  const signed =
+    await signTransaction(
+      tx.toXDR(),
+      {
+        networkPassphrase:
+          Networks.TESTNET,
+      }
+    );
 
-    const signedTx =
-      TransactionBuilder.fromXDR(
-        signed.signedTxXdr,
-        Networks.TESTNET
-      );
+  const signedTx =
+    TransactionBuilder.fromXDR(
+      signed.signedTxXdr,
+      Networks.TESTNET
+    );
 
-    const sendResponse =
-      await server.sendTransaction(
-        signedTx
-      );
+  const sendResponse =
+    await server.sendTransaction(
+      signedTx
+    );
 
-    if (
-      sendResponse.status ===
-      "PENDING"
-    ) {
-      return await waitForTransaction(
-        sendResponse.hash
-      );
-    }
-
-    return sendResponse;
-  } catch (error) {
-    console.error(error);
-    throw error;
+  if (
+    sendResponse.status ===
+    "PENDING"
+  ) {
+    return await waitForTransaction(
+      sendResponse.hash
+    );
   }
+
+  return sendResponse;
 }
 
 export async function topUp(
@@ -123,12 +109,8 @@ export async function topUp(
     walletAddress,
     "top_up",
     [
-      nativeToScVal(
-        Number(rfidUid)
-      ),
-      nativeToScVal(
-        Number(amount)
-      ),
+      nativeToScVal(Number(rfidUid)),
+      nativeToScVal(Number(amount)),
     ]
   );
 }
@@ -141,7 +123,9 @@ export async function registerMerchant(
     walletAddress,
     "register_merchant",
     [
-      nativeToScVal(merchant),
+      Address.fromString(
+        merchant
+      ).toScVal(),
     ]
   );
 }
@@ -156,66 +140,50 @@ export async function processTap(
     walletAddress,
     "process_tap",
     [
-      nativeToScVal(
-        Number(rfidUid)
-      ),
-      nativeToScVal(merchant),
-      nativeToScVal(
-        Number(amount)
-      ),
+      nativeToScVal(Number(rfidUid)),
+
+      Address.fromString(
+        merchant
+      ).toScVal(),
+
+      nativeToScVal(Number(amount)),
     ]
   );
 }
 
-/*
- * READ BALANCE
- */
 export async function getBalance(
   walletAddress,
   rfidUid
 ) {
-  try {
-    const account =
-      await server.getAccount(
-        walletAddress
-      );
-
-    const contract =
-      new Contract(CONTRACT_ID);
-
-    const tx =
-      new TransactionBuilder(
-        account,
-        {
-          fee: BASE_FEE,
-          networkPassphrase:
-            Networks.TESTNET,
-        }
-      )
-        .addOperation(
-          contract.call(
-            "get_balance",
-            nativeToScVal(
-              Number(rfidUid)
-            )
-          )
-        )
-        .setTimeout(30)
-        .build();
-
-    const sim =
-      await server.simulateTransaction(
-        tx
-      );
-
-    console.log(
-      "Balance Response:",
-      sim
+  const account =
+    await server.getAccount(
+      walletAddress
     );
 
-    return sim;
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
+  const contract =
+    new Contract(CONTRACT_ID);
+
+  const tx =
+    new TransactionBuilder(account, {
+      fee: BASE_FEE,
+      networkPassphrase:
+        Networks.TESTNET,
+    })
+      .addOperation(
+        contract.call(
+          "get_balance",
+          nativeToScVal(
+            Number(rfidUid)
+          )
+        )
+      )
+      .setTimeout(30)
+      .build();
+
+  const simulation =
+    await server.simulateTransaction(
+      tx
+    );
+
+  return simulation;
 }
