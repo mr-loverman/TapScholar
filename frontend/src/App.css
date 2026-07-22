@@ -1,0 +1,261 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  background: #0f172a;
+  color: white;
+  font-family:
+    Inter,
+    Arial,
+    sans-serif;
+}
+
+.app {
+  min-height: 100vh;
+}
+
+/* NAVBAR */
+
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 25px 60px;
+}
+
+.logo {
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.wallet-btn,
+.cta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed
+  );
+  color: white;
+  font-weight: 600;
+}
+
+.connected {
+  background: #1e293b;
+  padding: 12px;
+  border-radius: 12px;
+}
+
+/* HERO */
+
+.hero {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 40px;
+  align-items: center;
+  padding: 80px;
+}
+
+.hero-left h1 {
+  font-size: 64px;
+  line-height: 1.1;
+  margin-bottom: 20px;
+}
+
+.hero-left p {
+  color: #cbd5e1;
+  font-size: 18px;
+  margin-bottom: 30px;
+}
+
+.badge {
+  display: inline-block;
+  margin-bottom: 20px;
+  background: rgba(
+    59,
+    130,
+    246,
+    0.2
+  );
+  color: #60a5fa;
+  padding: 8px 15px;
+  border-radius: 999px;
+}
+
+.hero-right img {
+  width: 100%;
+  border-radius: 24px;
+}
+
+/* FEATURES */
+
+.features {
+  padding: 80px;
+}
+
+.features h2 {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.cards {
+  display: grid;
+  grid-template-columns:
+    repeat(3, 1fr);
+  gap: 20px;
+}
+
+.card {
+  background: #1e293b;
+  padding: 30px;
+  border-radius: 20px;
+  text-align: center;
+}
+
+.icon {
+  font-size: 40px;
+  color: #60a5fa;
+  margin-bottom: 15px;
+}
+
+.card p {
+  color: #94a3b8;
+  margin-top: 10px;
+}
+
+/* PROCESS */
+
+.process {
+  padding: 80px;
+  text-align: center;
+}
+
+.steps {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  margin-top: 50px;
+  flex-wrap: wrap;
+}
+
+.step {
+  background: #1e293b;
+  padding: 25px;
+  border-radius: 16px;
+  min-width: 180px;
+}
+
+.stepIcon {
+  font-size: 40px;
+  margin-bottom: 15px;
+  color: #818cf8;
+}
+
+.arrow {
+  font-size: 30px;
+  color: #60a5fa;
+}
+
+/* DASHBOARD */
+
+.dashboard {
+  padding: 80px;
+}
+
+.balance-card {
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed
+  );
+
+  border-radius: 24px;
+
+  padding: 30px;
+
+  margin-bottom: 40px;
+}
+
+.actions {
+  background: #1e293b;
+  padding: 30px;
+  border-radius: 24px;
+}
+
+.actions input {
+  width: 100%;
+  padding: 14px;
+  border: none;
+  background: #0f172a;
+  color: white;
+  border-radius: 12px;
+  margin-bottom: 15px;
+}
+
+.btn-grid {
+  display: grid;
+  grid-template-columns:
+    repeat(2, 1fr);
+  gap: 15px;
+}
+
+.btn-grid button {
+  border: none;
+  border-radius: 12px;
+  padding: 14px;
+  cursor: pointer;
+
+  color: white;
+
+  background: linear-gradient(
+    135deg,
+    #2563eb,
+    #7c3aed
+  );
+}
+
+.result {
+  margin-top: 25px;
+  background: #0f172a;
+  padding: 15px;
+  border-radius: 12px;
+  color: #60a5fa;
+  word-break: break-word;
+}
+
+/* MOBILE */
+
+@media (max-width: 900px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding: 40px;
+  }
+
+  .hero-left h1 {
+    font-size: 42px;
+  }
+
+  .cards {
+    grid-template-columns: 1fr;
+  }
+
+  .navbar {
+    padding: 20px;
+  }
+
+  .features,
+  .process,
+  .dashboard {
+    padding: 40px 20px;
+  }
+}
