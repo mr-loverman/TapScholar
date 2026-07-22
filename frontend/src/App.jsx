@@ -103,39 +103,27 @@ function App() {
     }
   }
 
-  async function handleBalance() {
-    try {
-      setResult(
-        "Fetching balance..."
-      );
+async function handleBalance() {
+  try {
+    setResult("Fetching balance...");
 
-      const response =
-        await getBalance(
-          wallet,
-          rfid
-        );
+    const response = await getBalance(
+      wallet,
+      rfid
+    );
 
-      console.log(
-        "FULL BALANCE RESPONSE:",
-        response
-      );
+    const balance =
+      response?.result?.retval?._value
+        ?._attributes?.lo?._value || "0";
 
-      setResult(
-        JSON.stringify(
-          response,
-          null,
-          2
-        )
-      );
-    } catch (error) {
-      console.error(error);
-
-      setResult(
-        error?.message ||
-          "Failed to fetch balance"
-      );
-    }
+    setResult(
+      `💰 Current Balance: ${balance}`
+    );
+  } catch (error) {
+    console.error(error);
+    setResult(error.message);
   }
+}
 
   return (
     <div className="app">
@@ -187,8 +175,13 @@ function App() {
           </button>
         </div>
 
+
         <div className="hero-right">
-          {Hero}
+          <img
+            src={Hero}
+            alt="TapScholars Hero"
+            className="hero-image"
+          />
         </div>
       </section>
 
