@@ -18,7 +18,7 @@ import {
 } from "./stellar/contract";
 
 import "./App.css";
-import Hero from "./assets/hero.jpeg"
+import Hero from "./assets/hero.jpeg";
 
 function App() {
   const [wallet, setWallet] = useState("");
@@ -31,65 +31,125 @@ function App() {
     try {
       const address = await connectWallet();
       setWallet(address);
+      setResult("✅ Wallet Connected");
     } catch (error) {
-      alert(error.message);
+      console.error(error);
+      setResult(error.message);
     }
   }
 
   async function handleTopUp() {
     try {
-      await topUp(wallet, rfid, amount);
-      setResult("✅ Top up successful");
-    } catch (error) {
-      setResult(error.message);
-    }
-  }
+      setResult("Processing top up...");
 
-  async function handleProcessTap() {
-    try {
-      await processTap(
+      const response = await topUp(
         wallet,
         rfid,
-        merchant,
         amount
       );
-      setResult("✅ Payment processed");
+
+      console.log(response);
+
+      setResult("✅ Top Up Successful");
     } catch (error) {
+      console.error(error);
       setResult(error.message);
     }
   }
 
   async function handleRegisterMerchant() {
     try {
-      await registerMerchant(
+      setResult("Registering Merchant...");
+
+      const response = await registerMerchant(
         wallet,
         merchant
       );
-      setResult("✅ Merchant registered");
+
+      console.log(response);
+
+      setResult("✅ Merchant Registered");
     } catch (error) {
+      console.error(error);
+      setResult(error.message);
+    }
+  }
+
+  async function handleProcessTap() {
+    try {
+      setResult("Processing Payment...");
+
+      const response = await processTap(
+        wallet,
+        rfid,
+        merchant,
+        amount
+      );
+
+      console.log(response);
+
+      setResult("✅ Payment Processed");
+    } catch (error) {
+      console.error(error);
       setResult(error.message);
     }
   }
 
   async function handleBalance() {
     try {
+      setResult("Fetching Balance...");
+
       const response = await getBalance(
         wallet,
         rfid
       );
 
+      console.log("Balance Response", response);
+
+      /*
+       * Try multiple Soroban formats
+       */
+      let balance = null;
+
+      if (
+        response?.result?.retval?._value !==
+        undefined
+      ) {
+        balance =
+          response.result.retval._value;
+      } else if (
+        response?.result?.retval?.value !==
+        undefined
+      ) {
+        balance =
+          response.result.retval.value;
+      } else if (
+        response?.result?.retval
+      ) {
+        balance =
+          JSON.stringify(
+            response.result.retval
+          );
+      } else {
+        balance =
+          JSON.stringify(
+            response,
+            null,
+            2
+          );
+      }
+
       setResult(
-        JSON.stringify(response, null, 2)
+        `💰 Current Balance: ${balance}`
       );
     } catch (error) {
+      console.error(error);
       setResult(error.message);
     }
   }
 
   return (
     <div className="app">
-      {/* NAVBAR */}
-
       <nav className="navbar">
         <div className="logo">
           TapScholars
@@ -110,8 +170,6 @@ function App() {
           </div>
         )}
       </nav>
-
-      {/* HERO */}
 
       <section className="hero">
         <div className="hero-left">
@@ -142,11 +200,9 @@ function App() {
         </div>
 
         <div className="hero-right">
-          <img src={Hero}/>
+          {Hero}
         </div>
       </section>
-
-      {/* FEATURES */}
 
       <section className="features">
         <h2>Why TapScholars?</h2>
@@ -156,8 +212,8 @@ function App() {
             <FaIdCard className="icon" />
             <h3>RFID Student ID</h3>
             <p>
-              Use existing student IDs for
-              cashless payments.
+              Use existing school IDs for
+              seamless cashless payments.
             </p>
           </div>
 
@@ -165,8 +221,8 @@ function App() {
             <FaBolt className="icon" />
             <h3>Instant Settlement</h3>
             <p>
-              Payments settle instantly
-              through Stellar.
+              Payments settle instantly on
+              Stellar.
             </p>
           </div>
 
@@ -174,14 +230,12 @@ function App() {
             <FaStore className="icon" />
             <h3>Merchant Friendly</h3>
             <p>
-              Cafeterias and drivers receive
-              funds immediately.
+              Merchants receive payment
+              immediately.
             </p>
           </div>
         </div>
       </section>
-
-      {/* PROCESS */}
 
       <section className="process">
         <h2>How It Works</h2>
@@ -196,26 +250,24 @@ function App() {
 
           <div className="step">
             <FaWallet className="stepIcon" />
-            <h3>Soroban Contract</h3>
+            <h3>Soroban</h3>
           </div>
 
           <div className="arrow">→</div>
 
           <div className="step">
             <FaCheckCircle className="stepIcon" />
-            <h3>Payment Approved</h3>
+            <h3>Approved</h3>
           </div>
 
           <div className="arrow">→</div>
 
           <div className="step">
             <FaMoneyBillWave className="stepIcon" />
-            <h3>Merchant Paid</h3>
+            <h3>Paid</h3>
           </div>
         </div>
       </section>
-
-      {/* DASHBOARD */}
 
       <section className="dashboard">
         <div className="balance-card">
@@ -249,7 +301,9 @@ function App() {
             placeholder="Merchant Address"
             value={merchant}
             onChange={(e) =>
-              setMerchant(e.target.value)
+              setMerchant(
+                e.target.value
+              )
             }
           />
 
