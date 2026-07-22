@@ -61,14 +61,17 @@ function App() {
     try {
       setResult("Registering Merchant...");
 
-      const response = await registerMerchant(
-        wallet,
-        merchant
-      );
+      const response =
+        await registerMerchant(
+          wallet,
+          merchant
+        );
 
       console.log(response);
 
-      setResult("✅ Merchant Registered");
+      setResult(
+        "✅ Merchant Registered"
+      );
     } catch (error) {
       console.error(error);
       setResult(error.message);
@@ -77,18 +80,23 @@ function App() {
 
   async function handleProcessTap() {
     try {
-      setResult("Processing Payment...");
-
-      const response = await processTap(
-        wallet,
-        rfid,
-        merchant,
-        amount
+      setResult(
+        "Processing Payment..."
       );
+
+      const response =
+        await processTap(
+          wallet,
+          rfid,
+          merchant,
+          amount
+        );
 
       console.log(response);
 
-      setResult("✅ Payment Processed");
+      setResult(
+        "✅ Payment Processed"
+      );
     } catch (error) {
       console.error(error);
       setResult(error.message);
@@ -97,54 +105,35 @@ function App() {
 
   async function handleBalance() {
     try {
-      setResult("Fetching Balance...");
-
-      const response = await getBalance(
-        wallet,
-        rfid
+      setResult(
+        "Fetching balance..."
       );
 
-      console.log("Balance Response", response);
+      const response =
+        await getBalance(
+          wallet,
+          rfid
+        );
 
-      /*
-       * Try multiple Soroban formats
-       */
-      let balance = null;
-
-      if (
-        response?.result?.retval?._value !==
-        undefined
-      ) {
-        balance =
-          response.result.retval._value;
-      } else if (
-        response?.result?.retval?.value !==
-        undefined
-      ) {
-        balance =
-          response.result.retval.value;
-      } else if (
-        response?.result?.retval
-      ) {
-        balance =
-          JSON.stringify(
-            response.result.retval
-          );
-      } else {
-        balance =
-          JSON.stringify(
-            response,
-            null,
-            2
-          );
-      }
+      console.log(
+        "FULL BALANCE RESPONSE:",
+        response
+      );
 
       setResult(
-        `💰 Current Balance: ${balance}`
+        JSON.stringify(
+          response,
+          null,
+          2
+        )
       );
     } catch (error) {
       console.error(error);
-      setResult(error.message);
+
+      setResult(
+        error?.message ||
+          "Failed to fetch balance"
+      );
     }
   }
 
@@ -184,11 +173,10 @@ function App() {
           </h1>
 
           <p>
-            Transform school IDs into
-            secure RFID payment cards for
-            transportation and cafeteria
-            purchases using Soroban Smart
-            Contracts.
+            Transform school IDs into secure RFID
+            payment cards for transportation and
+            cafeteria purchases using Soroban
+            Smart Contracts.
           </p>
 
           <button
@@ -212,8 +200,9 @@ function App() {
             <FaIdCard className="icon" />
             <h3>RFID Student ID</h3>
             <p>
-              Use existing school IDs for
-              seamless cashless payments.
+              Use existing student IDs
+              for seamless cashless
+              payments.
             </p>
           </div>
 
@@ -221,8 +210,8 @@ function App() {
             <FaBolt className="icon" />
             <h3>Instant Settlement</h3>
             <p>
-              Payments settle instantly on
-              Stellar.
+              Payments settle instantly
+              on Stellar.
             </p>
           </div>
 
@@ -246,21 +235,27 @@ function App() {
             <h3>Tap RFID</h3>
           </div>
 
-          <div className="arrow">→</div>
+          <div className="arrow">
+            →
+          </div>
 
           <div className="step">
             <FaWallet className="stepIcon" />
             <h3>Soroban</h3>
           </div>
 
-          <div className="arrow">→</div>
+          <div className="arrow">
+            →
+          </div>
 
           <div className="step">
             <FaCheckCircle className="stepIcon" />
             <h3>Approved</h3>
           </div>
 
-          <div className="arrow">→</div>
+          <div className="arrow">
+            →
+          </div>
 
           <div className="step">
             <FaMoneyBillWave className="stepIcon" />
@@ -272,10 +267,13 @@ function App() {
       <section className="dashboard">
         <div className="balance-card">
           <p>Wallet Connected</p>
+
           <h3>
             {wallet
-              ? wallet.substring(0, 16) +
-                "..."
+              ? wallet.substring(
+                  0,
+                  16
+                ) + "..."
               : "Not Connected"}
           </h3>
         </div>
@@ -285,7 +283,9 @@ function App() {
             placeholder="RFID UID"
             value={rfid}
             onChange={(e) =>
-              setRfid(e.target.value)
+              setRfid(
+                e.target.value
+              )
             }
           />
 
@@ -293,7 +293,9 @@ function App() {
             placeholder="Amount"
             value={amount}
             onChange={(e) =>
-              setAmount(e.target.value)
+              setAmount(
+                e.target.value
+              )
             }
           />
 
@@ -331,14 +333,16 @@ function App() {
             </button>
 
             <button
-              onClick={handleBalance}
+              onClick={
+                handleBalance
+              }
             >
               Get Balance
             </button>
           </div>
 
           <div className="result">
-            {result}
+            <pre>{result}</pre>
           </div>
         </div>
       </section>
